@@ -3,579 +3,732 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SHADOW ILLEGAL</title>
-    <!-- Utilisation d'une police effrayante de Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifier&display=swap" rel="stylesheet">
+    <title>Lecteur Audio Ultime</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chargement de la bibliothèque three.js pour la visualisation 3D -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        :root {
-            --color-dark: #0a0a0a;
-            --color-primary: #8b0000;
-            --color-secondary: #e04b4b;
-            --color-glitch-blue: #00ffff;
-            --color-glitch-red: #ff00ff;
-        }
-
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+        
         body {
-            background-color: var(--color-dark);
-            color: var(--color-secondary);
-            font-family: 'Nosifier', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #E0E0E0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            text-shadow: 0 0 5px var(--color-secondary);
-            animation: pulse-bg 15s infinite ease-in-out;
-        }
-
-        @keyframes pulse-bg {
-            0% { background-color: var(--color-dark); }
-            50% { background-color: #140000; }
-            100% { background-color: var(--color-dark); }
+            padding: 1rem;
+            /* Correction : suppression de 'overflow: hidden' pour permettre le défilement */
+            background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
         }
 
         .container {
-            width: 90%;
-            max-width: 1200px;
-            padding: 2rem;
-            text-align: center;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 1s ease-out, transform 1s ease-out;
-            position: relative; /* Needed for positioning settings button */
-        }
-
-        .container.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .shadow-title {
-            font-family: 'Creepster', cursive;
-            font-size: clamp(3rem, 10vw, 8rem);
-            line-height: 1;
-            letter-spacing: 5px;
-            color: var(--color-primary);
             position: relative;
-            animation: glitch 1.5s infinite alternate-reverse, pulse 3s infinite ease-in-out;
-            text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary);
-            -webkit-text-stroke: 1px var(--color-secondary);
-            margin-bottom: 2rem;
-        }
-        
-        @keyframes pulse {
-            0% { text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary); }
-            50% { text-shadow: 0 0 20px var(--color-primary), 0 0 40px var(--color-primary); }
-            100% { text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary); }
-        }
-
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-3px, 3px); }
-            40% { transform: translate(-3px, -3px); }
-            60% { transform: translate(3px, 3px); }
-            80% { transform: translate(3px, -3px); }
-            100% { transform: translate(0); }
-        }
-
-        .glitch-text::before, .glitch-text::after {
-            content: attr(data-text);
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-        }
-        
-        .glitch-text::before {
-            left: -2px;
-            text-shadow: 1px 0 var(--color-glitch-blue);
-            animation: glitch-anim 1s infinite linear alternate-reverse;
-        }
-        
-        .glitch-text::after {
-            left: 2px;
-            text-shadow: -1px 0 var(--color-glitch-red);
-            animation: glitch-anim2 1.5s infinite linear alternate-reverse;
-        }
-
-        @keyframes glitch-anim {
-            0% { clip-path: inset(45% 0 15% 0); }
-            10% { clip-path: inset(80% 0 10% 0); }
-            20% { clip-path: inset(10% 0 70% 0); }
-            30% { clip-path: inset(50% 0 35% 0); }
-            40% { clip-path: inset(70% 0 5% 0); }
-            50% { clip-path: inset(25% 0 65% 0); }
-            60% { clip-path: inset(5% 0 85% 0); }
-            70% { clip-path: inset(60% 0 10% 0); }
-            80% { clip-path: inset(15% 0 75% 0); }
-            90% { clip-path: inset(80% 0 5% 0); }
-            100% { clip-path: inset(30% 0 40% 0); }
-        }
-        
-        @keyframes glitch-anim2 {
-            0% { clip-path: inset(15% 0 75% 0); }
-            10% { clip-path: inset(60% 0 10% 0); }
-            20% { clip-path: inset(5% 0 85% 0); }
-            30% { clip-path: inset(25% 0 65% 0); }
-            40% { clip-path: inset(70% 0 5% 0); }
-            50% { clip-path: inset(50% 0 35% 0); }
-            60% { clip-path: inset(10% 0 70% 0); }
-            70% { clip-path: inset(80% 0 10% 0); }
-            80% { clip-path: inset(45% 0 15% 0); }
-            90% { clip-path: inset(30% 0 40% 0); }
-            100% { clip-path: inset(80% 0 5% 0); }
-        }
-
-        .login-box {
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--color-primary);
-            box-shadow: 0 0 15px var(--color-primary), inset 0 0 10px var(--color-primary);
-            padding: 2rem;
-            border-radius: 10px;
-            max-width: 400px;
-            width: 100%;
-            transition: all 0.5s ease-in-out;
-        }
-
-        .login-box:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px var(--color-secondary), inset 0 0 15px var(--color-secondary);
-        }
-
-        .input-text {
-            background-color: #1a0000;
-            border: 1px solid var(--color-primary);
-            color: var(--color-secondary);
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            font-family: 'Nosifier', sans-serif;
-            text-shadow: 0 0 5px var(--color-secondary);
-            box-shadow: inset 0 0 5px var(--color-primary);
-            transition: all 0.3s ease-in-out;
-        }
-
-        .input-text:focus {
-            outline: none;
-            border-color: var(--color-secondary);
-            box-shadow: 0 0 10px var(--color-secondary), inset 0 0 8px var(--color-secondary);
-        }
-
-        .submit-btn {
-            background-color: var(--color-primary);
-            color: var(--color-dark);
-            font-family: 'Nosifier', sans-serif;
-            padding: 0.75rem 1.5rem;
-            border: none;
-            cursor: pointer;
-            text-shadow: none;
-            box-shadow: 0 0 10px var(--color-primary);
-            transition: all 0.3s ease-in-out;
-            font-size: 1.25rem;
-            letter-spacing: 2px;
-        }
-
-        .submit-btn:hover {
-            background-color: var(--color-secondary);
-            color: black;
-            box-shadow: 0 0 20px var(--color-secondary);
-            transform: scale(1.05);
-        }
-
-        .error-message {
-            color: #ff3333;
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            animation: flicker 1s infinite alternate;
-        }
-        
-        @keyframes flicker {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .video-container {
-            position: relative;
-            width: 100%;
-            padding-top: 56.25%; /* 16:9 Aspect Ratio */
-            margin-top: 2rem;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--color-primary);
-            box-shadow: 0 0 20px var(--color-primary);
-            transition: all 0.5s ease-in-out;
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            border-radius: 2rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
             max-width: 900px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--color-dark);
-            z-index: 2000;
-            display: none;
+            display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            gap: 2rem;
             text-align: center;
         }
 
-        .loading-text {
-            font-family: 'Creepster', cursive;
-            font-size: clamp(2rem, 8vw, 6rem);
-            color: var(--color-primary);
-            animation: glitch 1.5s infinite alternate-reverse, pulse 3s infinite ease-in-out;
-            text-shadow: 0 0 10px var(--color-primary);
+        @media (min-width: 768px) {
+            .container {
+                flex-direction: row;
+                text-align: left;
+            }
         }
 
-        .signature {
-            font-family: 'Nosifier', sans-serif;
-            position: fixed; /* Correction: Position fixe pour rester en bas de l'écran */
-            bottom: 1rem;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.75rem;
-            color: rgba(255, 255, 255, 0.1);
-            animation: signature-pulse 10s infinite ease-in-out;
-            z-index: 500; /* Assure que la signature est au-dessus du reste */
-        }
-
-        @keyframes signature-pulse {
-            0%, 100% { color: rgba(255, 255, 255, 0.1); }
-            50% { color: var(--color-secondary); text-shadow: 0 0 5px var(--color-secondary); }
+        h1 {
+            color: #fff;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            letter-spacing: -1px;
         }
         
-        /* Bouton de paramètres et modale */
-        .settings-btn {
-            position: fixed;
-            top: 1rem;
-            right: 1rem;
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            background-color: rgba(0, 0, 0, 0.7);
-            border: 1px solid var(--color-primary);
-            box-shadow: 0 0 10px var(--color-primary);
+        p.subtitle {
+            color: #B0B0B0;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+
+        .left-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .right-panel {
+            flex: 1.5;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .input-group, .controls, .modes {
+            padding: 1.5rem;
+            background: rgba(30, 30, 30, 0.7);
+            border-radius: 1rem;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .input-group:hover, .controls:hover, .modes:hover {
+            transform: translateY(-5px);
+        }
+
+        .file-label {
+            display: inline-block;
+            background: linear-gradient(45deg, #4CAF50, #2E8B57);
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 9999px;
             cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            font-weight: 600;
+        }
+        
+        .file-label:hover {
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.2);
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        #song-display {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            min-height: 1.5rem;
+            margin-top: 0.5rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .controls-grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            .controls-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .control-group {
+            text-align: left;
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: #B0B0B0;
+            font-size: 0.9rem;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 10px;
+            background: #333;
+            border-radius: 9999px;
+            outline: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #4CAF50;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.5);
+            transition: background-color 0.2s ease;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #2E8B57;
+        }
+
+        .slider-value {
+            font-size: 0.8rem;
+            width: 3rem;
+            color: #999;
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .main-buttons {
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.3s ease-in-out;
-            z-index: 100;
+            gap: 1rem;
+            margin-top: 1rem;
         }
 
-        .settings-btn img {
-            width: 2rem; /* Taille réduite */
-            height: 2rem; /* Taille réduite */
-            transition: transform 0.3s ease-in-out;
+        .main-button {
+            background: #4A4A4A;
+            color: #E0E0E0;
+            padding: 0.8rem 1.8rem;
+            border-radius: 9999px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        
+        .main-button:hover {
+            background: #666;
+            transform: translateY(-2px);
         }
 
-        .settings-btn:hover img {
-            transform: rotate(90deg) scale(1.1);
+        .mode-button {
+            padding: 0.6rem 1.2rem;
+            border-radius: 9999px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            background: #2C2C2C;
+            color: #999;
+        }
+        
+        .mode-button:hover {
+            background: #444;
+            transform: translateY(-2px);
         }
 
-        .settings-btn:hover {
-            box-shadow: 0 0 20px var(--color-secondary);
+        .mode-button.active {
+            background: #4CAF50;
+            color: white;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2);
+        }
+        
+        .visualizer-container {
+            width: 100%;
+            height: 350px;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            background: #0a0a0a;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
+        #visualizer-canvas {
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
         }
 
-        /* Animation pour l'ouverture de la modale */
-        .modal-overlay.show {
-            animation: fade-in 0.5s ease-in-out forwards;
-        }
-
-        /* Animation pour la fermeture de la modale */
-        .modal-overlay.hide {
-            animation: fade-out 0.5s ease-out forwards;
-        }
-
-        @keyframes fade-in {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes fade-out {
-            from { opacity: 1; }
-            to { opacity: 0; }
-        }
-
-        .modal-content {
-            background-color: var(--color-dark);
-            border: 2px solid var(--color-primary);
-            box-shadow: 0 0 20px var(--color-secondary);
-            padding: 2rem;
-            border-radius: 10px;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            position: relative;
-        }
-
-        .close-btn {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 1.5rem;
-            color: var(--color-secondary);
-            cursor: pointer;
-            transition: color 0.3s;
-        }
-
-        .close-btn:hover {
-            color: #ff3333;
-        }
-
-        .color-options {
-            display: flex;
-            justify-content: center;
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        .color-circle {
-            width: 3rem;
-            height: 3rem;
-            border-radius: 50%;
-            border: 2px solid #fff;
-            cursor: pointer;
-            transition: transform 0.2s ease-in-out, border 0.2s ease-in-out;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-            position: relative;
-        }
-        
-        /* Coche de sélection */
-        .color-circle.selected-color::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            color: white;
-            text-shadow: 0 0 5px black;
-        }
-
-        .color-circle:hover {
-            transform: scale(1.2);
-            border-color: var(--color-secondary);
-        }
     </style>
 </head>
-<body class="bg-gray-900 text-red-500 font-sans p-8">
+<body>
 
-    <!-- Écran de connexion avec mot de passe -->
-    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen">
-        <h1 class="shadow-title glitch-text" data-text="SHADOW ILLEGAL">SHADOW ILLEGAL</h1>
-        <p class="text-xl mb-4 text-center">BIENVENUE DANS L'OMBRE. ACCÈS RESTREINT.</p>
-        <div class="login-box flex flex-col items-center">
-            <input type="password" id="password-input" class="input-text w-full rounded-md text-center" placeholder="Entre le mot de passe...">
-            <button id="login-btn" class="submit-btn rounded-md w-full">ACCEDER</button>
-            <p id="error-message" class="error-message"></p>
+<div class="container">
+    <div class="left-panel">
+        <div class="header">
+            <h1 class="text-4xl">Lecteur de Musique Magique</h1>
+            <p class="subtitle">Importez une musique locale et appliquez des effets en temps réel !</p>
         </div>
-    </div>
 
-    <!-- Écran de chargement -->
-    <div id="loading-screen" class="loading-screen">
-        <p class="loading-text">CHARGEMENT...</p>
-    </div>
-
-    <!-- Contenu principal du site (initialement caché) -->
-    <div id="main-content" class="container hidden">
-        <h1 class="shadow-title glitch-text" data-text="SHADOW ILLEGAL">SHADOW ILLEGAL</h1>
-        
-        <!-- Bouton de paramètres -->
-        <button id="settings-btn" class="settings-btn">
-            <!-- Icône d'image pour les paramètres -->
-            <img src="https://i.imgur.com/RNXZL16.png" alt="Icône Paramètres">
-        </button>
-        
-        <!-- Conteneur pour la vidéo unique et stylée -->
-        <div class="video-container">
-            <!-- La vidéo est ici. Tu peux changer l'URL de l'iframe ! -->
-            <iframe width="560" height="315" src="https://www.youtube.com/embed/o-YdC9uYyO0?si=LqUf4886bK5lQ8o4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        <!-- Zone de téléversement de fichier -->
+        <div class="input-group">
+            <label for="file-input" class="file-label">Importer une Musique</label>
+            <input type="file" id="file-input" accept="audio/*">
+            <div id="song-display">Aucune musique chargée</div>
+            <div class="main-buttons">
+                <button id="play-pause-button" class="main-button">Lecture</button>
+                <button id="stop-button" class="main-button">Arrêt</button>
+            </div>
         </div>
-    </div>
-    
-    <!-- Signature animée -->
-    <p class="signature">Powered by SHADOW</p>
 
-    <!-- Modale personnalisée pour les messages -->
-    <div id="modal-overlay" class="modal-overlay">
-        <div id="modal-content" class="modal-content">
-            <span id="modal-close-btn" class="close-btn">&times;</span>
-            <p id="modal-message" class="text-lg font-bold font-creepy mb-4"></p>
-        </div>
-    </div>
-
-    <!-- Modale de paramètres (nouvelle) -->
-    <div id="settings-modal-overlay" class="modal-overlay">
-        <div id="settings-modal-content" class="modal-content">
-            <span id="settings-modal-close-btn" class="close-btn">&times;</span>
-            <h2 class="text-2xl font-bold mb-4 font-creepy">PARAMÈTRES</h2>
-            <p class="text-lg mb-4">CHOISIS TON THÈME DE COULEUR :</p>
-            <div class="color-options">
-                <div class="color-circle" style="background-color: #8b0000; border-color: #e04b4b;" data-primary="#8b0000" data-secondary="#e04b4b"></div>
-                <div class="color-circle" style="background-color: #008000; border-color: #32cd32;" data-primary="#008000" data-secondary="#32cd32"></div>
-                <div class="color-circle" style="background-color: #00008b; border-color: #4169e1;" data-primary="#00008b" data-secondary="#4169e1"></div>
-                <div class="color-circle" style="background-color: #800080; border-color: #da70d6;" data-primary="#800080" data-secondary="#da70d6"></div>
-                <div class="color-circle" style="background-color: #808000; border-color: #ffd700;" data-primary="#808000" data-secondary="#ffd700"></div>
-                <div class="color-circle" style="background-color: #ffa500; border-color: #ffdab9;" data-primary="#ffa500" data-secondary="#ffdab9"></div>
+        <!-- Panneau de contrôle des effets -->
+        <div class="controls">
+            <h2 class="text-xl font-semibold mb-4 text-white">Contrôles Audio</h2>
+            <div class="controls-grid">
+                <!-- Vitesse -->
+                <div class="control-group">
+                    <label for="speed-slider">Vitesse <span id="speed-value">1.00x</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="speed-slider" min="0.5" max="2.0" value="1.0" step="0.01">
+                    </div>
+                </div>
+                <!-- Volume -->
+                <div class="control-group">
+                    <label for="volume-slider">Volume <span id="volume-value">100%</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="volume-slider" min="0" max="1" value="1" step="0.01">
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+    
+    <div class="right-panel">
+        <!-- Visualiseur Audio -->
+        <div class="visualizer-container">
+            <canvas id="visualizer-canvas"></canvas>
+        </div>
 
-    <script>
-        const loginScreen = document.getElementById('login-screen');
-        const loadingScreen = document.getElementById('loading-screen');
-        const mainContent = document.getElementById('main-content');
-        const loginButton = document.getElementById('login-btn');
-        const passwordInput = document.getElementById('password-input');
-        const errorMessage = document.getElementById('error-message');
-        const modalOverlay = document.getElementById('modal-overlay');
-        const modalMessage = document.getElementById('modal-message');
-        const modalCloseBtn = document.getElementById('modal-close-btn');
+        <!-- Modes sonores -->
+        <div class="modes">
+            <h2 class="text-xl font-semibold mb-4 text-white">Modes Sonores</h2>
+            <div class="flex flex-wrap justify-center gap-2">
+                <button id="mode-normal" class="mode-button active">Normal</button>
+                <button id="mode-slowed-reverb" class="mode-button">Slowed + Reverb</button>
+                <button id="mode-bass-boost" class="mode-button">Bass Boost</button>
+                <button id="mode-vocal-boost" class="mode-button">Vocal Boost</button>
+            </div>
+        </div>
 
-        const settingsBtn = document.getElementById('settings-btn');
-        const settingsModalOverlay = document.getElementById('settings-modal-overlay');
-        const settingsModalCloseBtn = document.getElementById('settings-modal-close-btn');
-        const colorOptionsContainer = document.querySelector('.color-options');
-        const root = document.documentElement;
+        <!-- Égaliseur -->
+        <div class="controls">
+            <h2 class="text-xl font-semibold mb-4 text-white">Égaliseur Manuel</h2>
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label for="low-eq-slider">Basses (-12dB) <span id="low-eq-value">0</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="low-eq-slider" min="-24" max="24" value="0">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="mid-eq-slider">Médiums (-12dB) <span id="mid-eq-value">0</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="mid-eq-slider" min="-24" max="24" value="0">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="high-eq-slider">Aigus (-12dB) <span id="high-eq-value">0</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="high-eq-slider" min="-24" max="24" value="0">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label for="panning-slider">Panoramique <span id="panning-value">Centre</span></label>
+                    <div class="slider-container">
+                        <input type="range" id="panning-slider" min="-1" max="1" value="0" step="0.1">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        // Fonction pour afficher une modale avec un message
-        const showModal = (message) => {
-            modalMessage.textContent = message;
-            modalOverlay.style.display = 'flex';
-        };
+<script>
+    // Éléments DOM
+    const fileInput = document.getElementById('file-input');
+    const songDisplay = document.getElementById('song-display');
+    const playPauseButton = document.getElementById('play-pause-button');
+    const stopButton = document.getElementById('stop-button');
+    const speedSlider = document.getElementById('speed-slider');
+    const speedValueDisplay = document.getElementById('speed-value');
+    const volumeSlider = document.getElementById('volume-slider');
+    const volumeValueDisplay = document.getElementById('volume-value');
+    const lowEqSlider = document.getElementById('low-eq-slider');
+    const lowEqValueDisplay = document.getElementById('low-eq-value');
+    const midEqSlider = document.getElementById('mid-eq-slider');
+    const midEqValueDisplay = document = document.getElementById('mid-eq-value');
+    const highEqSlider = document.getElementById('high-eq-slider');
+    const highEqValueDisplay = document.getElementById('high-eq-value');
+    const panningSlider = document.getElementById('panning-slider');
+    const panningValueDisplay = document.getElementById('panning-value');
+    const modeButtons = document.querySelectorAll('.mode-button');
 
-        // Fermer la modale de message
-        modalCloseBtn.addEventListener('click', () => {
-            modalOverlay.style.display = 'none';
+    // API Web Audio
+    // L'AudioContext doit être créé ou résumé après une interaction de l'utilisateur.
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    let sourceNode;
+    let analyserNode;
+    let gainNode;
+    let convolverNode;
+    let pannerNode;
+    let eqFilters = [];
+    let audioBuffer;
+    let isPlaying = false;
+    let currentMode = 'normal';
+    let lastPlaybackTime = 0;
+    let lastPosition = 0;
+
+    // SCÈNE 3D
+    let scene, camera, renderer, particles, particleCount, geometry, material;
+
+    // Gère la configuration initiale du graphe audio
+    function setupAudioGraph() {
+        // Crée les nœuds audio si ce n'est pas déjà fait
+        analyserNode = audioContext.createAnalyser();
+        analyserNode.fftSize = 256;
+
+        gainNode = audioContext.createGain();
+        pannerNode = audioContext.createPanner();
+        pannerNode.panningModel = 'equalpower';
+
+        // Crée les filtres de l'égaliseur
+        const frequencies = [125, 1000, 8000]; // Basses, Médiums, Aigus
+        eqFilters = frequencies.map(freq => {
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'peaking';
+            filter.frequency.setValueAtTime(freq, audioContext.currentTime);
+            filter.Q.setValueAtTime(1, audioContext.currentTime);
+            filter.gain.setValueAtTime(0, audioContext.currentTime);
+            return filter;
         });
 
-        // Ouvrir la modale de paramètres
-        settingsBtn.addEventListener('click', () => {
-            settingsModalOverlay.style.display = 'flex';
-            settingsModalOverlay.classList.remove('hide');
-            settingsModalOverlay.classList.add('show');
-        });
+        // Crée le nœud de réverbération
+        convolverNode = audioContext.createConvolver();
+        convolverNode.buffer = createReverbImpulseResponse();
 
-        // Fermer la modale de paramètres avec une animation
-        settingsModalCloseBtn.addEventListener('click', () => {
-            settingsModalOverlay.classList.remove('show');
-            settingsModalOverlay.classList.add('hide');
-            setTimeout(() => {
-                settingsModalOverlay.style.display = 'none';
-                settingsModalOverlay.classList.remove('hide');
-            }, 500); // Durée de l'animation en ms
-        });
-
-        // Appliquer les couleurs du thème au site et mettre à jour la sélection
-        const setTheme = (primary, secondary) => {
-            root.style.setProperty('--color-primary', primary);
-            root.style.setProperty('--color-secondary', secondary);
-            // Sauvegarder le thème dans localStorage
-            localStorage.setItem('shadowTheme', JSON.stringify({ primary, secondary }));
-        };
-
-        // Charger le thème depuis localStorage au chargement de la page
-        const loadTheme = () => {
-            const savedTheme = localStorage.getItem('shadowTheme');
-            let primaryColor = '#8b0000'; // Thème par défaut
-            let secondaryColor = '#e04b4b'; // Thème par défaut
-            if (savedTheme) {
-                const themeData = JSON.parse(savedTheme);
-                primaryColor = themeData.primary;
-                secondaryColor = themeData.secondary;
-                setTheme(primaryColor, secondaryColor);
-            }
-            
-            // Mettre en évidence le cercle de couleur sélectionné
-            const circles = document.querySelectorAll('.color-circle');
-            circles.forEach(circle => {
-                circle.classList.remove('selected-color');
-                if (circle.dataset.primary === primaryColor) {
-                    circle.classList.add('selected-color');
-                }
+        // Connexion par défaut : source -> filtres EQ -> réverbération (désactivée) -> panner -> gain -> analyseur -> destination
+        if (sourceNode) {
+            let lastNode = sourceNode;
+            eqFilters.forEach(filter => {
+                lastNode.connect(filter);
+                lastNode = filter;
             });
-        };
 
-        // Ajouter des écouteurs de clic aux cercles de couleur
-        colorOptionsContainer.addEventListener('click', (e) => {
-            const circle = e.target.closest('.color-circle');
-            if (circle) {
-                const primaryColor = circle.dataset.primary;
-                const secondaryColor = circle.dataset.secondary;
-                setTheme(primaryColor, secondaryColor);
-                
-                // Mettre à jour l'indicateur de sélection
-                document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected-color'));
-                circle.classList.add('selected-color');
-            }
-        });
+            // Connexion de la réverbération (initialement désactivée)
+            lastNode.connect(pannerNode);
+            pannerNode.connect(analyserNode);
+            analyserNode.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+        }
+    }
+    
+    // Met à jour la connexion du graphe audio en fonction des modes
+    function updateAudioGraphConnections() {
+        // Déconnecte tous les nœuds pour éviter les boucles
+        if (sourceNode) {
+            sourceNode.disconnect();
+            eqFilters.forEach(filter => filter.disconnect());
+            convolverNode.disconnect();
+            pannerNode.disconnect();
+            analyserNode.disconnect();
+            gainNode.disconnect();
 
-        // Gérer le clic sur le bouton de connexion
-        const SECRET_PASSWORD = "SHADOW255";
-        loginButton.addEventListener('click', () => {
-            if (passwordInput.value === SECRET_PASSWORD) {
-                // Masquer l'écran de connexion et afficher l'écran de chargement
-                loginScreen.classList.add('hidden');
-                loadingScreen.style.display = 'flex';
+            // Reconnecte le graphe
+            let lastNode = sourceNode;
+            
+            // Connecte les filtres de l'égaliseur
+            eqFilters.forEach(filter => {
+                lastNode.connect(filter);
+                lastNode = filter;
+            });
 
-                // Simuler un temps de chargement de 5 secondes
-                setTimeout(() => {
-                    // Masquer l'écran de chargement et afficher le contenu principal
-                    loadingScreen.style.display = 'none';
-                    mainContent.classList.remove('hidden');
-                    mainContent.classList.add('visible');
-                    loadTheme(); // Charger le thème sauvegardé une fois le contenu visible
-                }, 5000); // 5000 millisecondes = 5 secondes
+            // Connecte la réverbération si le mode est actif
+            if (currentMode === 'slowed-reverb') {
+                lastNode.connect(convolverNode);
+                convolverNode.connect(pannerNode);
             } else {
-                errorMessage.textContent = "ACCÈS REFUSÉ. MOT DE PASSE INCORRECT.";
-                passwordInput.value = '';
+                lastNode.connect(pannerNode);
             }
-        });
 
-        // Gérer la touche Entrée dans le champ de mot de passe
-        passwordInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                loginButton.click();
+            pannerNode.connect(analyserNode);
+            analyserNode.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+        }
+    }
+
+    // Fonction pour générer une réponse impulsionnelle pour la réverbération
+    function createReverbImpulseResponse() {
+        const length = audioContext.sampleRate * 2;
+        const impulse = audioContext.createBuffer(2, length, audioContext.sampleRate);
+        const impulseL = impulse.getChannelData(0);
+        const impulseR = impulse.getChannelData(1);
+
+        for (let i = 0; i < length; i++) {
+            impulseL[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+            impulseR[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / length, 2);
+        }
+        return impulse;
+    }
+
+    // Crée et connecte la source audio
+    function createSource(buffer) {
+        if (sourceNode) {
+            sourceNode.stop();
+            sourceNode.disconnect();
+        }
+        sourceNode = audioContext.createBufferSource();
+        sourceNode.buffer = buffer;
+        sourceNode.loop = true; // Permet de boucler la musique
+        
+        // Initialise le graphe audio
+        setupAudioGraph();
+        updateAudioGraphConnections();
+        
+        // Démarre la lecture
+        sourceNode.start(0, lastPosition);
+        isPlaying = true;
+        playPauseButton.textContent = "Pause";
+        lastPlaybackTime = audioContext.currentTime;
+    }
+
+    // Gestion du chargement du fichier
+    fileInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const arrayBuffer = event.target.result;
+                audioContext.decodeAudioData(arrayBuffer)
+                    .then(buffer => {
+                        audioBuffer = buffer;
+                        songDisplay.textContent = `Lecture : ${file.name}`;
+                        lastPosition = 0; // Réinitialise la position
+                        createSource(audioBuffer);
+                        setMode(currentMode);
+                    })
+                    .catch(error => console.error('Erreur lors du décodage du fichier audio', error));
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    });
+
+    // Contrôles de lecture
+    playPauseButton.addEventListener('click', () => {
+        if (!audioBuffer) {
+            songDisplay.textContent = "Veuillez charger une musique d'abord !";
+            return;
+        }
+
+        // Il faut un geste de l'utilisateur pour démarrer le contexte audio
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+
+        if (isPlaying) {
+            audioContext.suspend();
+            isPlaying = false;
+            playPauseButton.textContent = "Lecture";
+            lastPosition += audioContext.currentTime - lastPlaybackTime;
+        } else {
+            // Si la source a été arrêtée (par le bouton stop), on la recrée
+            if (sourceNode && sourceNode.buffer) {
+                audioContext.resume();
+                isPlaying = true;
+                playPauseButton.textContent = "Pause";
+                lastPlaybackTime = audioContext.currentTime;
+            } else {
+                createSource(audioBuffer);
             }
+        }
+    });
+
+    stopButton.addEventListener('click', () => {
+        if (audioBuffer) {
+            if (sourceNode) {
+                sourceNode.stop();
+            }
+            isPlaying = false;
+            playPauseButton.textContent = "Lecture";
+            lastPosition = 0;
+            songDisplay.textContent = `Arrêté : ${audioBuffer.name}`;
+        }
+    });
+
+    // Événements pour les sliders
+    speedSlider.addEventListener('input', (e) => {
+        const rate = parseFloat(e.target.value);
+        if (sourceNode) {
+            sourceNode.playbackRate.setValueAtTime(rate, audioContext.currentTime);
+        }
+        speedValueDisplay.textContent = `${rate.toFixed(2)}x`;
+    });
+
+    volumeSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        if (gainNode) {
+            gainNode.gain.setValueAtTime(value, audioContext.currentTime);
+        }
+        volumeValueDisplay.textContent = `${Math.round(value * 100)}%`;
+    });
+
+    lowEqSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        if (eqFilters[0]) {
+            eqFilters[0].gain.setValueAtTime(value, audioContext.currentTime);
+        }
+        lowEqValueDisplay.textContent = `${value}dB`;
+    });
+
+    midEqSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        if (eqFilters[1]) {
+            eqFilters[1].gain.setValueAtTime(value, audioContext.currentTime);
+        }
+        midEqValueDisplay.textContent = `${value}dB`;
+    });
+
+    highEqSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        if (eqFilters[2]) {
+            eqFilters[2].gain.setValueAtTime(value, audioContext.currentTime);
+        }
+        highEqValueDisplay.textContent = `${value}dB`;
+    });
+    
+    panningSlider.addEventListener('input', (e) => {
+        const value = parseFloat(e.target.value);
+        if (pannerNode) {
+            pannerNode.setPosition(value, 0, 0);
+        }
+        panningValueDisplay.textContent = value === 0 ? "Centre" : value > 0 ? "Droite" : "Gauche";
+    });
+
+    // Gestion des modes sonores
+    function setMode(mode) {
+        currentMode = mode;
+        modeButtons.forEach(btn => btn.classList.remove('active'));
+        document.getElementById(`mode-${mode}`).classList.add('active');
+
+        // Réinitialise tous les curseurs
+        speedSlider.value = 1.0;
+        speedValueDisplay.textContent = "1.00x";
+        lowEqSlider.value = 0;
+        lowEqValueDisplay.textContent = "0dB";
+        midEqSlider.value = 0;
+        midEqValueDisplay.textContent = "0dB";
+        highEqSlider.value = 0;
+        highEqValueDisplay.textContent = "0dB";
+        panningSlider.value = 0;
+        panningValueDisplay.textContent = "Centre";
+
+        // Applique les paramètres du mode
+        if (sourceNode) {
+            sourceNode.playbackRate.setValueAtTime(1.0, audioContext.currentTime);
+            pannerNode.setPosition(0, 0, 0);
+            eqFilters[0].gain.setValueAtTime(0, audioContext.currentTime);
+            eqFilters[1].gain.setValueAtTime(0, audioContext.currentTime);
+            eqFilters[2].gain.setValueAtTime(0, audioContext.currentTime);
+        }
+        
+        switch (mode) {
+            case 'normal':
+                break;
+            case 'slowed-reverb':
+                if (sourceNode) {
+                    sourceNode.playbackRate.setValueAtTime(0.75, audioContext.currentTime);
+                    speedValueDisplay.textContent = '0.75x';
+                }
+                break;
+            case 'bass-boost':
+                if (eqFilters[0]) eqFilters[0].gain.setValueAtTime(12, audioContext.currentTime);
+                lowEqSlider.value = 12;
+                lowEqValueDisplay.textContent = "12dB";
+                break;
+            case 'vocal-boost':
+                if (eqFilters[1]) eqFilters[1].gain.setValueAtTime(8, audioContext.currentTime);
+                midEqSlider.value = 8;
+                midEqValueDisplay.textContent = "8dB";
+                break;
+        }
+
+        updateAudioGraphConnections();
+    }
+
+    modeButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            const mode = e.target.id.split('-')[1];
+            setMode(mode);
+        });
+    });
+
+    // --- VISUALISEUR 3D AVEC THREE.JS ---
+
+    // Initialisation de la scène 3D
+    function init3DVisualizer() {
+        scene = new THREE.Scene();
+        camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
+        camera.position.z = 5;
+
+        renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
+        renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+        renderer.setClearColor(0x000000, 0); // Fond transparent
+
+        // Crée des particules
+        particleCount = 5000;
+        geometry = new THREE.BufferGeometry();
+        const positions = [];
+        const colors = [];
+
+        for (let i = 0; i < particleCount; i++) {
+            // Positions aléatoires
+            positions.push(
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20,
+                (Math.random() - 0.5) * 20
+            );
+            // Couleurs aléatoires
+            colors.push(Math.random(), Math.random(), Math.random());
+        }
+
+        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+
+        material = new THREE.PointsMaterial({
+            size: 0.1,
+            vertexColors: true,
+            transparent: true,
+            opacity: 0.8
         });
 
-        // Effacer le message d'erreur quand l'utilisateur commence à taper
-        passwordInput.addEventListener('input', () => {
-            errorMessage.textContent = "";
-        });
+        particles = new THREE.Points(geometry, material);
+        scene.add(particles);
 
-    </script>
+        // Resize handler
+        window.addEventListener('resize', () => {
+            camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
+        });
+    }
+
+    // Boucle d'animation
+    function animate() {
+        requestAnimationFrame(animate);
+
+        if (isPlaying && analyserNode) {
+            const bufferLength = analyserNode.fftSize;
+            const dataArray = new Uint8Array(bufferLength);
+            analyserNode.getByteFrequencyData(dataArray);
+
+            const averageFrequency = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
+            const scale = 1 + (averageFrequency / 255) * 2; // Échelle de 1 à 3
+            
+            // Fait réagir le visualiseur 3D à l'audio
+            particles.scale.set(scale, scale, scale);
+            particles.rotation.x += 0.001;
+            particles.rotation.y += 0.002;
+        }
+
+        renderer.render(scene, camera);
+    }
+    
+    // Démarre l'animation sur le chargement de la fenêtre
+    window.onload = function () {
+        init3DVisualizer();
+        animate();
+    }
+
+</script>
+
 </body>
 </html>
