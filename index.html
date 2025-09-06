@@ -19,7 +19,6 @@
             align-items: center;
             min-height: 100vh;
             padding: 1rem;
-            /* Correction : suppression de 'overflow: hidden' pour permettre le défilement */
             background: linear-gradient(135deg, #1f1f1f 0%, #0a0a0a 100%);
         }
 
@@ -115,6 +114,13 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+        }
+        
+        #loading-message {
+            color: #4CAF50;
+            font-weight: bold;
+            margin-top: 0.5rem;
+            display: none;
         }
 
         .controls-grid {
@@ -255,6 +261,7 @@
             <label for="file-input" class="file-label">Importer une Musique</label>
             <input type="file" id="file-input" accept="audio/*">
             <div id="song-display">Aucune musique chargée</div>
+            <div id="loading-message"></div>
             <div class="main-buttons">
                 <button id="play-pause-button" class="main-button">Lecture</button>
                 <button id="stop-button" class="main-button">Arrêt</button>
@@ -276,7 +283,8 @@
                 <div class="control-group">
                     <label for="volume-slider">Volume <span id="volume-value">100%</span></label>
                     <div class="slider-container">
-                        <input type="range" id="volume-slider" min="0" max="1" value="1" step="0.01">
+                        <!-- Mise à jour : max="2" pour permettre 200% -->
+                        <input type="range" id="volume-slider" min="0" max="2" value="1" step="0.01">
                     </div>
                 </div>
             </div>
@@ -297,6 +305,7 @@
                 <button id="mode-slowed-reverb" class="mode-button">Slowed + Reverb</button>
                 <button id="mode-bass-boost" class="mode-button">Bass Boost</button>
                 <button id="mode-vocal-boost" class="mode-button">Vocal Boost</button>
+                <button id="mode-cinematic" class="mode-button">Cinématique</button>
             </div>
         </div>
 
@@ -337,6 +346,7 @@
     // Éléments DOM
     const fileInput = document.getElementById('file-input');
     const songDisplay = document.getElementById('song-display');
+    const loadingMessage = document.getElementById('loading-message');
     const playPauseButton = document.getElementById('play-pause-button');
     const stopButton = document.getElementById('stop-button');
     const speedSlider = document.getElementById('speed-slider');
@@ -354,7 +364,6 @@
     const modeButtons = document.querySelectorAll('.mode-button');
 
     // API Web Audio
-    // L'AudioContext doit être créé ou résumé après une interaction de l'utilisateur.
     const audioContext = new (window.AudioContext || window.webkitAudioContext)();
     let sourceNode;
     let analyserNode;
@@ -362,6 +371,8 @@
     let convolverNode;
     let pannerNode;
     let eqFilters = [];
+    let lowpassFilter;
+    let highpassFilter;
     let audioBuffer;
     let isPlaying = false;
     let currentMode = 'normal';
@@ -369,82 +380,11 @@
     let lastPosition = 0;
 
     // SCÈNE 3D
-    let scene, camera, renderer, particles, particleCount, geometry, material;
-
-    // Gère la configuration initiale du graphe audio
-    function setupAudioGraph() {
-        // Crée les nœuds audio si ce n'est pas déjà fait
-        analyserNode = audioContext.createAnalyser();
-        analyserNode.fftSize = 256;
-
-        gainNode = audioContext.createGain();
-        pannerNode = audioContext.createPanner();
-        pannerNode.panningModel = 'equalpower';
-
-        // Crée les filtres de l'égaliseur
-        const frequencies = [125, 1000, 8000]; // Basses, Médiums, Aigus
-        eqFilters = frequencies.map(freq => {
-            const filter = audioContext.createBiquadFilter();
-            filter.type = 'peaking';
-            filter.frequency.setValueAtTime(freq, audioContext.currentTime);
-            filter.Q.setValueAtTime(1, audioContext.currentTime);
-            filter.gain.setValueAtTime(0, audioContext.currentTime);
-            return filter;
-        });
-
-        // Crée le nœud de réverbération
-        convolverNode = audioContext.createConvolver();
-        convolverNode.buffer = createReverbImpulseResponse();
-
-        // Connexion par défaut : source -> filtres EQ -> réverbération (désactivée) -> panner -> gain -> analyseur -> destination
-        if (sourceNode) {
-            let lastNode = sourceNode;
-            eqFilters.forEach(filter => {
-                lastNode.connect(filter);
-                lastNode = filter;
-            });
-
-            // Connexion de la réverbération (initialement désactivée)
-            lastNode.connect(pannerNode);
-            pannerNode.connect(analyserNode);
-            analyserNode.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-        }
-    }
-    
-    // Met à jour la connexion du graphe audio en fonction des modes
-    function updateAudioGraphConnections() {
-        // Déconnecte tous les nœuds pour éviter les boucles
-        if (sourceNode) {
-            sourceNode.disconnect();
-            eqFilters.forEach(filter => filter.disconnect());
-            convolverNode.disconnect();
-            pannerNode.disconnect();
-            analyserNode.disconnect();
-            gainNode.disconnect();
-
-            // Reconnecte le graphe
-            let lastNode = sourceNode;
-            
-            // Connecte les filtres de l'égaliseur
-            eqFilters.forEach(filter => {
-                lastNode.connect(filter);
-                lastNode = filter;
-            });
-
-            // Connecte la réverbération si le mode est actif
-            if (currentMode === 'slowed-reverb') {
-                lastNode.connect(convolverNode);
-                convolverNode.connect(pannerNode);
-            } else {
-                lastNode.connect(pannerNode);
-            }
-
-            pannerNode.connect(analyserNode);
-            analyserNode.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-        }
-    }
+    const canvas = document.getElementById('visualizer-canvas');
+    let scene, camera, renderer, particles;
+    let geometry, material;
+    const particleCount = 5000;
+    let positions, colors, sizes;
 
     // Fonction pour générer une réponse impulsionnelle pour la réverbération
     function createReverbImpulseResponse() {
@@ -460,6 +400,80 @@
         return impulse;
     }
 
+    // Crée le graphe audio avec tous les nœuds
+    function setupAudioGraph() {
+        analyserNode = audioContext.createAnalyser();
+        analyserNode.fftSize = 256;
+        
+        gainNode = audioContext.createGain();
+        pannerNode = audioContext.createPanner();
+        pannerNode.panningModel = 'equalpower';
+        
+        convolverNode = audioContext.createConvolver();
+        convolverNode.buffer = createReverbImpulseResponse();
+
+        // Crée les filtres de l'égaliseur et des filtres de mode
+        const frequencies = [125, 1000, 8000];
+        eqFilters = frequencies.map(freq => {
+            const filter = audioContext.createBiquadFilter();
+            filter.type = 'peaking';
+            filter.frequency.setValueAtTime(freq, audioContext.currentTime);
+            filter.Q.setValueAtTime(1, audioContext.currentTime);
+            filter.gain.setValueAtTime(0, audioContext.currentTime);
+            return filter;
+        });
+
+        lowpassFilter = audioContext.createBiquadFilter();
+        lowpassFilter.type = 'lowpass';
+        lowpassFilter.frequency.setValueAtTime(20000, audioContext.currentTime);
+        lowpassFilter.Q.setValueAtTime(1, audioContext.currentTime);
+        
+        highpassFilter = audioContext.createBiquadFilter();
+        highpassFilter.type = 'highpass';
+        highpassFilter.frequency.setValueAtTime(0, audioContext.currentTime);
+        highpassFilter.Q.setValueAtTime(1, audioContext.currentTime);
+    }
+    
+    // Met à jour la connexion du graphe audio en fonction des modes
+    function updateAudioGraphConnections() {
+        if (!sourceNode) return;
+        sourceNode.disconnect();
+        convolverNode.disconnect();
+        pannerNode.disconnect();
+        analyserNode.disconnect();
+        gainNode.disconnect();
+        eqFilters.forEach(filter => filter.disconnect());
+        lowpassFilter.disconnect();
+        highpassFilter.disconnect();
+
+        // Reconnexion du graphe
+        let lastNode = sourceNode;
+        
+        // Connecte les filtres de l'égaliseur
+        eqFilters.forEach(filter => {
+            lastNode.connect(filter);
+            lastNode = filter;
+        });
+
+        // Connexions spécifiques au mode
+        if (currentMode === 'slowed-reverb') {
+            lastNode.connect(convolverNode);
+            convolverNode.connect(pannerNode);
+        } else if (currentMode === 'cinematic') {
+            lastNode.connect(lowpassFilter);
+            lowpassFilter.connect(highpassFilter);
+            highpassFilter.connect(convolverNode);
+            convolverNode.connect(pannerNode);
+        } else {
+            lastNode.connect(pannerNode);
+        }
+
+        // Connexions finales
+        pannerNode.connect(analyserNode);
+        analyserNode.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+    }
+
     // Crée et connecte la source audio
     function createSource(buffer) {
         if (sourceNode) {
@@ -468,13 +482,11 @@
         }
         sourceNode = audioContext.createBufferSource();
         sourceNode.buffer = buffer;
-        sourceNode.loop = true; // Permet de boucler la musique
+        sourceNode.loop = true;
         
-        // Initialise le graphe audio
         setupAudioGraph();
         updateAudioGraphConnections();
         
-        // Démarre la lecture
         sourceNode.start(0, lastPosition);
         isPlaying = true;
         playPauseButton.textContent = "Pause";
@@ -485,6 +497,8 @@
     fileInput.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
+            loadingMessage.style.display = 'block';
+            songDisplay.textContent = "";
             const reader = new FileReader();
             reader.onload = (event) => {
                 const arrayBuffer = event.target.result;
@@ -492,11 +506,16 @@
                     .then(buffer => {
                         audioBuffer = buffer;
                         songDisplay.textContent = `Lecture : ${file.name}`;
-                        lastPosition = 0; // Réinitialise la position
+                        loadingMessage.style.display = 'none';
+                        lastPosition = 0;
                         createSource(audioBuffer);
                         setMode(currentMode);
                     })
-                    .catch(error => console.error('Erreur lors du décodage du fichier audio', error));
+                    .catch(error => {
+                        console.error('Erreur lors du décodage du fichier audio', error);
+                        songDisplay.textContent = "Erreur de chargement du fichier.";
+                        loadingMessage.style.display = 'none';
+                    });
             };
             reader.readAsArrayBuffer(file);
         }
@@ -509,7 +528,6 @@
             return;
         }
 
-        // Il faut un geste de l'utilisateur pour démarrer le contexte audio
         if (audioContext.state === 'suspended') {
             audioContext.resume();
         }
@@ -520,7 +538,6 @@
             playPauseButton.textContent = "Lecture";
             lastPosition += audioContext.currentTime - lastPlaybackTime;
         } else {
-            // Si la source a été arrêtée (par le bouton stop), on la recrée
             if (sourceNode && sourceNode.buffer) {
                 audioContext.resume();
                 isPlaying = true;
@@ -558,6 +575,7 @@
         if (gainNode) {
             gainNode.gain.setValueAtTime(value, audioContext.currentTime);
         }
+        // Mise à jour : affiche le pourcentage jusqu'à 200%
         volumeValueDisplay.textContent = `${Math.round(value * 100)}%`;
     });
 
@@ -599,7 +617,7 @@
         modeButtons.forEach(btn => btn.classList.remove('active'));
         document.getElementById(`mode-${mode}`).classList.add('active');
 
-        // Réinitialise tous les curseurs
+        // Réinitialise tous les curseurs et les filtres
         speedSlider.value = 1.0;
         speedValueDisplay.textContent = "1.00x";
         lowEqSlider.value = 0;
@@ -610,16 +628,20 @@
         highEqValueDisplay.textContent = "0dB";
         panningSlider.value = 0;
         panningValueDisplay.textContent = "Centre";
-
-        // Applique les paramètres du mode
+        
         if (sourceNode) {
             sourceNode.playbackRate.setValueAtTime(1.0, audioContext.currentTime);
             pannerNode.setPosition(0, 0, 0);
             eqFilters[0].gain.setValueAtTime(0, audioContext.currentTime);
             eqFilters[1].gain.setValueAtTime(0, audioContext.currentTime);
             eqFilters[2].gain.setValueAtTime(0, audioContext.currentTime);
+            
+            // Réinitialisation des filtres de mode
+            lowpassFilter.frequency.setValueAtTime(20000, audioContext.currentTime);
+            highpassFilter.frequency.setValueAtTime(0, audioContext.currentTime);
         }
-        
+
+        // Applique les paramètres du mode
         switch (mode) {
             case 'normal':
                 break;
@@ -639,8 +661,13 @@
                 midEqSlider.value = 8;
                 midEqValueDisplay.textContent = "8dB";
                 break;
+            case 'cinematic':
+                if (lowpassFilter && highpassFilter) {
+                    lowpassFilter.frequency.setValueAtTime(2000, audioContext.currentTime);
+                    highpassFilter.frequency.setValueAtTime(500, audioContext.currentTime);
+                }
+                break;
         }
-
         updateAudioGraphConnections();
     }
 
@@ -653,7 +680,6 @@
 
     // --- VISUALISEUR 3D AVEC THREE.JS ---
 
-    // Initialisation de la scène 3D
     function init3DVisualizer() {
         scene = new THREE.Scene();
         camera = new THREE.PerspectiveCamera(75, canvas.offsetWidth / canvas.offsetHeight, 0.1, 1000);
@@ -661,27 +687,27 @@
 
         renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
         renderer.setSize(canvas.offsetWidth, canvas.offsetHeight);
-        renderer.setClearColor(0x000000, 0); // Fond transparent
+        renderer.setClearColor(0x000000, 0);
 
         // Crée des particules
-        particleCount = 5000;
         geometry = new THREE.BufferGeometry();
-        const positions = [];
-        const colors = [];
+        positions = new Float32Array(particleCount * 3);
+        colors = new Float32Array(particleCount * 3);
+        sizes = new Float32Array(particleCount);
 
         for (let i = 0; i < particleCount; i++) {
-            // Positions aléatoires
-            positions.push(
-                (Math.random() - 0.5) * 20,
-                (Math.random() - 0.5) * 20,
-                (Math.random() - 0.5) * 20
-            );
-            // Couleurs aléatoires
-            colors.push(Math.random(), Math.random(), Math.random());
+            positions[i * 3 + 0] = (Math.random() - 0.5) * 20;
+            positions[i * 3 + 1] = (Math.random() - 0.5) * 20;
+            positions[i * 3 + 2] = (Math.random() - 0.5) * 20;
+            colors[i * 3 + 0] = Math.random();
+            colors[i * 3 + 1] = Math.random();
+            colors[i * 3 + 2] = Math.random();
+            sizes[i] = 0.1;
         }
 
-        geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
-        geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        geometry.setAttribute('size', new THREE.BufferAttribute(sizes, 1));
 
         material = new THREE.PointsMaterial({
             size: 0.1,
@@ -693,7 +719,6 @@
         particles = new THREE.Points(geometry, material);
         scene.add(particles);
 
-        // Resize handler
         window.addEventListener('resize', () => {
             camera.aspect = canvas.offsetWidth / canvas.offsetHeight;
             camera.updateProjectionMatrix();
@@ -706,23 +731,35 @@
         requestAnimationFrame(animate);
 
         if (isPlaying && analyserNode) {
-            const bufferLength = analyserNode.fftSize;
+            const bufferLength = analyserNode.frequencyBinCount;
             const dataArray = new Uint8Array(bufferLength);
             analyserNode.getByteFrequencyData(dataArray);
-
-            const averageFrequency = dataArray.reduce((sum, value) => sum + value, 0) / bufferLength;
-            const scale = 1 + (averageFrequency / 255) * 2; // Échelle de 1 à 3
             
-            // Fait réagir le visualiseur 3D à l'audio
-            particles.scale.set(scale, scale, scale);
-            particles.rotation.x += 0.001;
-            particles.rotation.y += 0.002;
+            // Fait réagir les particules à la musique
+            for(let i = 0; i < particleCount; i++) {
+                const i3 = i * 3;
+                const i_mod = i % bufferLength;
+                
+                // Change la position des particules en fonction de la fréquence
+                const frequencyValue = dataArray[i_mod] / 255;
+                positions[i3 + 1] = (Math.random() - 0.5) * 20 + frequencyValue * 5;
+                
+                // Change la couleur des particules en fonction de la fréquence
+                const colorValue = 1 - frequencyValue;
+                colors[i3 + 0] = frequencyValue;
+                colors[i3 + 1] = colorValue;
+                colors[i3 + 2] = Math.random();
+            }
+
+            // Met à jour la géométrie des particules pour les changements de position et de couleur
+            geometry.attributes.position.needsUpdate = true;
+            geometry.attributes.color.needsUpdate = true;
+            particles.rotation.y += 0.001;
         }
 
         renderer.render(scene, camera);
     }
     
-    // Démarre l'animation sur le chargement de la fenêtre
     window.onload = function () {
         init3DVisualizer();
         animate();
