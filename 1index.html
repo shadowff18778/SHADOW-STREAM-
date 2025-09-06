@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SHADOW ILLEGAL</title>
+    <!-- Utilisation d'une police effrayante de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Nosifier&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --color-dark: #0a0a0a;
+            --color-primary: #8b0000;
+            --color-secondary: #e04b4b;
+            --color-glitch-blue: #00ffff;
+            --color-glitch-red: #ff00ff;
+        }
+
+        body {
+            background-color: var(--color-dark);
+            color: var(--color-secondary);
+            font-family: 'Nosifier', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-shadow: 0 0 5px var(--color-secondary);
+            animation: pulse-bg 15s infinite ease-in-out;
+        }
+
+        @keyframes pulse-bg {
+            0% { background-color: var(--color-dark); }
+            50% { background-color: #140000; }
+            100% { background-color: var(--color-dark); }
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            padding: 2rem;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 1s ease-out, transform 1s ease-out;
+            position: relative; /* Needed for positioning settings button */
+        }
+
+        .container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .shadow-title {
+            font-family: 'Creepster', cursive;
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 1;
+            letter-spacing: 5px;
+            color: var(--color-primary);
+            position: relative;
+            animation: glitch 1.5s infinite alternate-reverse, pulse 3s infinite ease-in-out;
+            text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary);
+            -webkit-text-stroke: 1px var(--color-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        @keyframes pulse {
+            0% { text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary); }
+            50% { text-shadow: 0 0 20px var(--color-primary), 0 0 40px var(--color-primary); }
+            100% { text-shadow: 0 0 10px var(--color-primary), 0 0 20px var(--color-primary); }
+        }
+
+        @keyframes glitch {
+            0% { transform: translate(0); }
+            20% { transform: translate(-3px, 3px); }
+            40% { transform: translate(-3px, -3px); }
+            60% { transform: translate(3px, 3px); }
+            80% { transform: translate(3px, -3px); }
+            100% { transform: translate(0); }
+        }
+
+        .glitch-text::before, .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .glitch-text::before {
+            left: -2px;
+            text-shadow: 1px 0 var(--color-glitch-blue);
+            animation: glitch-anim 1s infinite linear alternate-reverse;
+        }
+        
+        .glitch-text::after {
+            left: 2px;
+            text-shadow: -1px 0 var(--color-glitch-red);
+            animation: glitch-anim2 1.5s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim {
+            0% { clip-path: inset(45% 0 15% 0); }
+            10% { clip-path: inset(80% 0 10% 0); }
+            20% { clip-path: inset(10% 0 70% 0); }
+            30% { clip-path: inset(50% 0 35% 0); }
+            40% { clip-path: inset(70% 0 5% 0); }
+            50% { clip-path: inset(25% 0 65% 0); }
+            60% { clip-path: inset(5% 0 85% 0); }
+            70% { clip-path: inset(60% 0 10% 0); }
+            80% { clip-path: inset(15% 0 75% 0); }
+            90% { clip-path: inset(80% 0 5% 0); }
+            100% { clip-path: inset(30% 0 40% 0); }
+        }
+        
+        @keyframes glitch-anim2 {
+            0% { clip-path: inset(15% 0 75% 0); }
+            10% { clip-path: inset(60% 0 10% 0); }
+            20% { clip-path: inset(5% 0 85% 0); }
+            30% { clip-path: inset(25% 0 65% 0); }
+            40% { clip-path: inset(70% 0 5% 0); }
+            50% { clip-path: inset(50% 0 35% 0); }
+            60% { clip-path: inset(10% 0 70% 0); }
+            70% { clip-path: inset(80% 0 10% 0); }
+            80% { clip-path: inset(45% 0 15% 0); }
+            90% { clip-path: inset(30% 0 40% 0); }
+            100% { clip-path: inset(80% 0 5% 0); }
+        }
+
+        .login-box {
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--color-primary);
+            box-shadow: 0 0 15px var(--color-primary), inset 0 0 10px var(--color-primary);
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 400px;
+            width: 100%;
+            transition: all 0.5s ease-in-out;
+        }
+
+        .login-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 25px var(--color-secondary), inset 0 0 15px var(--color-secondary);
+        }
+
+        .input-text {
+            background-color: #1a0000;
+            border: 1px solid var(--color-primary);
+            color: var(--color-secondary);
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            font-family: 'Nosifier', sans-serif;
+            text-shadow: 0 0 5px var(--color-secondary);
+            box-shadow: inset 0 0 5px var(--color-primary);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .input-text:focus {
+            outline: none;
+            border-color: var(--color-secondary);
+            box-shadow: 0 0 10px var(--color-secondary), inset 0 0 8px var(--color-secondary);
+        }
+
+        .submit-btn {
+            background-color: var(--color-primary);
+            color: var(--color-dark);
+            font-family: 'Nosifier', sans-serif;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            cursor: pointer;
+            text-shadow: none;
+            box-shadow: 0 0 10px var(--color-primary);
+            transition: all 0.3s ease-in-out;
+            font-size: 1.25rem;
+            letter-spacing: 2px;
+        }
+
+        .submit-btn:hover {
+            background-color: var(--color-secondary);
+            color: black;
+            box-shadow: 0 0 20px var(--color-secondary);
+            transform: scale(1.05);
+        }
+
+        .error-message {
+            color: #ff3333;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            animation: flicker 1s infinite alternate;
+        }
+        
+        @keyframes flicker {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            margin-top: 2rem;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--color-primary);
+            box-shadow: 0 0 20px var(--color-primary);
+            transition: all 0.5s ease-in-out;
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--color-dark);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .loading-text {
+            font-family: 'Creepster', cursive;
+            font-size: clamp(2rem, 8vw, 6rem);
+            color: var(--color-primary);
+            animation: glitch 1.5s infinite alternate-reverse, pulse 3s infinite ease-in-out;
+            text-shadow: 0 0 10px var(--color-primary);
+        }
+
+        .signature {
+            font-family: 'Nosifier', sans-serif;
+            position: fixed; /* Correction: Position fixe pour rester en bas de l'écran */
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.1);
+            animation: signature-pulse 10s infinite ease-in-out;
+            z-index: 500; /* Assure que la signature est au-dessus du reste */
+        }
+
+        @keyframes signature-pulse {
+            0%, 100% { color: rgba(255, 255, 255, 0.1); }
+            50% { color: var(--color-secondary); text-shadow: 0 0 5px var(--color-secondary); }
+        }
+        
+        /* Bouton de paramètres et modale */
+        .settings-btn {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            background-color: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--color-primary);
+            box-shadow: 0 0 10px var(--color-primary);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease-in-out;
+            z-index: 100;
+        }
+
+        .settings-btn img {
+            width: 2rem; /* Taille réduite */
+            height: 2rem; /* Taille réduite */
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .settings-btn:hover img {
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .settings-btn:hover {
+            box-shadow: 0 0 20px var(--color-secondary);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        /* Animation pour l'ouverture de la modale */
+        .modal-overlay.show {
+            animation: fade-in 0.5s ease-in-out forwards;
+        }
+
+        /* Animation pour la fermeture de la modale */
+        .modal-overlay.hide {
+            animation: fade-out 0.5s ease-out forwards;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .modal-content {
+            background-color: var(--color-dark);
+            border: 2px solid var(--color-primary);
+            box-shadow: 0 0 20px var(--color-secondary);
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 1.5rem;
+            color: var(--color-secondary);
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #ff3333;
+        }
+
+        .color-options {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .color-circle {
+            width: 3rem;
+            height: 3rem;
+            border-radius: 50%;
+            border: 2px solid #fff;
+            cursor: pointer;
+            transition: transform 0.2s ease-in-out, border 0.2s ease-in-out;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+            position: relative;
+        }
+        
+        /* Coche de sélection */
+        .color-circle.selected-color::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: white;
+            text-shadow: 0 0 5px black;
+        }
+
+        .color-circle:hover {
+            transform: scale(1.2);
+            border-color: var(--color-secondary);
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-red-500 font-sans p-8">
+
+    <!-- Écran de connexion avec mot de passe -->
+    <div id="login-screen" class="flex flex-col items-center justify-center min-h-screen">
+        <h1 class="shadow-title glitch-text" data-text="SHADOW ILLEGAL">SHADOW ILLEGAL</h1>
+        <p class="text-xl mb-4 text-center">BIENVENUE DANS L'OMBRE. ACCÈS RESTREINT.</p>
+        <div class="login-box flex flex-col items-center">
+            <input type="password" id="password-input" class="input-text w-full rounded-md text-center" placeholder="Entre le mot de passe...">
+            <button id="login-btn" class="submit-btn rounded-md w-full">ACCEDER</button>
+            <p id="error-message" class="error-message"></p>
+        </div>
+    </div>
+
+    <!-- Écran de chargement -->
+    <div id="loading-screen" class="loading-screen">
+        <p class="loading-text">CHARGEMENT...</p>
+    </div>
+
+    <!-- Contenu principal du site (initialement caché) -->
+    <div id="main-content" class="container hidden">
+        <h1 class="shadow-title glitch-text" data-text="SHADOW ILLEGAL">SHADOW ILLEGAL</h1>
+        
+        <!-- Bouton de paramètres -->
+        <button id="settings-btn" class="settings-btn">
+            <!-- Icône d'image pour les paramètres -->
+            <img src="https://i.imgur.com/RNXZL16.png" alt="Icône Paramètres">
+        </button>
+        
+        <!-- Conteneur pour la vidéo unique et stylée -->
+        <div class="video-container">
+            <!-- La vidéo est ici. Tu peux changer l'URL de l'iframe ! -->
+            <iframe width="560" height="315" src="https://www.youtube.com/embed/o-YdC9uYyO0?si=LqUf4886bK5lQ8o4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+        </div>
+    </div>
+    
+    <!-- Signature animée -->
+    <p class="signature">Powered by SHADOW</p>
+
+    <!-- Modale personnalisée pour les messages -->
+    <div id="modal-overlay" class="modal-overlay">
+        <div id="modal-content" class="modal-content">
+            <span id="modal-close-btn" class="close-btn">&times;</span>
+            <p id="modal-message" class="text-lg font-bold font-creepy mb-4"></p>
+        </div>
+    </div>
+
+    <!-- Modale de paramètres (nouvelle) -->
+    <div id="settings-modal-overlay" class="modal-overlay">
+        <div id="settings-modal-content" class="modal-content">
+            <span id="settings-modal-close-btn" class="close-btn">&times;</span>
+            <h2 class="text-2xl font-bold mb-4 font-creepy">PARAMÈTRES</h2>
+            <p class="text-lg mb-4">CHOISIS TON THÈME DE COULEUR :</p>
+            <div class="color-options">
+                <div class="color-circle" style="background-color: #8b0000; border-color: #e04b4b;" data-primary="#8b0000" data-secondary="#e04b4b"></div>
+                <div class="color-circle" style="background-color: #008000; border-color: #32cd32;" data-primary="#008000" data-secondary="#32cd32"></div>
+                <div class="color-circle" style="background-color: #00008b; border-color: #4169e1;" data-primary="#00008b" data-secondary="#4169e1"></div>
+                <div class="color-circle" style="background-color: #800080; border-color: #da70d6;" data-primary="#800080" data-secondary="#da70d6"></div>
+                <div class="color-circle" style="background-color: #808000; border-color: #ffd700;" data-primary="#808000" data-secondary="#ffd700"></div>
+                <div class="color-circle" style="background-color: #ffa500; border-color: #ffdab9;" data-primary="#ffa500" data-secondary="#ffdab9"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loginScreen = document.getElementById('login-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const mainContent = document.getElementById('main-content');
+        const loginButton = document.getElementById('login-btn');
+        const passwordInput = document.getElementById('password-input');
+        const errorMessage = document.getElementById('error-message');
+        const modalOverlay = document.getElementById('modal-overlay');
+        const modalMessage = document.getElementById('modal-message');
+        const modalCloseBtn = document.getElementById('modal-close-btn');
+
+        const settingsBtn = document.getElementById('settings-btn');
+        const settingsModalOverlay = document.getElementById('settings-modal-overlay');
+        const settingsModalCloseBtn = document.getElementById('settings-modal-close-btn');
+        const colorOptionsContainer = document.querySelector('.color-options');
+        const root = document.documentElement;
+
+        // Fonction pour afficher une modale avec un message
+        const showModal = (message) => {
+            modalMessage.textContent = message;
+            modalOverlay.style.display = 'flex';
+        };
+
+        // Fermer la modale de message
+        modalCloseBtn.addEventListener('click', () => {
+            modalOverlay.style.display = 'none';
+        });
+
+        // Ouvrir la modale de paramètres
+        settingsBtn.addEventListener('click', () => {
+            settingsModalOverlay.style.display = 'flex';
+            settingsModalOverlay.classList.remove('hide');
+            settingsModalOverlay.classList.add('show');
+        });
+
+        // Fermer la modale de paramètres avec une animation
+        settingsModalCloseBtn.addEventListener('click', () => {
+            settingsModalOverlay.classList.remove('show');
+            settingsModalOverlay.classList.add('hide');
+            setTimeout(() => {
+                settingsModalOverlay.style.display = 'none';
+                settingsModalOverlay.classList.remove('hide');
+            }, 500); // Durée de l'animation en ms
+        });
+
+        // Appliquer les couleurs du thème au site et mettre à jour la sélection
+        const setTheme = (primary, secondary) => {
+            root.style.setProperty('--color-primary', primary);
+            root.style.setProperty('--color-secondary', secondary);
+            // Sauvegarder le thème dans localStorage
+            localStorage.setItem('shadowTheme', JSON.stringify({ primary, secondary }));
+        };
+
+        // Charger le thème depuis localStorage au chargement de la page
+        const loadTheme = () => {
+            const savedTheme = localStorage.getItem('shadowTheme');
+            let primaryColor = '#8b0000'; // Thème par défaut
+            let secondaryColor = '#e04b4b'; // Thème par défaut
+            if (savedTheme) {
+                const themeData = JSON.parse(savedTheme);
+                primaryColor = themeData.primary;
+                secondaryColor = themeData.secondary;
+                setTheme(primaryColor, secondaryColor);
+            }
+            
+            // Mettre en évidence le cercle de couleur sélectionné
+            const circles = document.querySelectorAll('.color-circle');
+            circles.forEach(circle => {
+                circle.classList.remove('selected-color');
+                if (circle.dataset.primary === primaryColor) {
+                    circle.classList.add('selected-color');
+                }
+            });
+        };
+
+        // Ajouter des écouteurs de clic aux cercles de couleur
+        colorOptionsContainer.addEventListener('click', (e) => {
+            const circle = e.target.closest('.color-circle');
+            if (circle) {
+                const primaryColor = circle.dataset.primary;
+                const secondaryColor = circle.dataset.secondary;
+                setTheme(primaryColor, secondaryColor);
+                
+                // Mettre à jour l'indicateur de sélection
+                document.querySelectorAll('.color-circle').forEach(c => c.classList.remove('selected-color'));
+                circle.classList.add('selected-color');
+            }
+        });
+
+        // Gérer le clic sur le bouton de connexion
+        const SECRET_PASSWORD = "SHADOW255";
+        loginButton.addEventListener('click', () => {
+            if (passwordInput.value === SECRET_PASSWORD) {
+                // Masquer l'écran de connexion et afficher l'écran de chargement
+                loginScreen.classList.add('hidden');
+                loadingScreen.style.display = 'flex';
+
+                // Simuler un temps de chargement de 5 secondes
+                setTimeout(() => {
+                    // Masquer l'écran de chargement et afficher le contenu principal
+                    loadingScreen.style.display = 'none';
+                    mainContent.classList.remove('hidden');
+                    mainContent.classList.add('visible');
+                    loadTheme(); // Charger le thème sauvegardé une fois le contenu visible
+                }, 5000); // 5000 millisecondes = 5 secondes
+            } else {
+                errorMessage.textContent = "ACCÈS REFUSÉ. MOT DE PASSE INCORRECT.";
+                passwordInput.value = '';
+            }
+        });
+
+        // Gérer la touche Entrée dans le champ de mot de passe
+        passwordInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                loginButton.click();
+            }
+        });
+
+        // Effacer le message d'erreur quand l'utilisateur commence à taper
+        passwordInput.addEventListener('input', () => {
+            errorMessage.textContent = "";
+        });
+
+    </script>
+</body>
+</html>
